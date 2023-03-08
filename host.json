@@ -1,0 +1,27 @@
+{
+  "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "excludedTypes": "Request"
+      }
+    }
+  },
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[3.*, 4.0.0)"
+  },
+  "extensions": {
+    "rabbitMQ": {
+      "prefetchCount": 100,
+      "queueName": "test_queue",
+      "connectionString": "amqp://ops:ops@localhost:5672",
+      "connectionStringSetting": "amqp://ops:ops@localhost:5672",
+      "hostName": "localhost",
+      "username": "ops",
+      "password": "ops",
+      "port": 5672
+    }
+  }
+}

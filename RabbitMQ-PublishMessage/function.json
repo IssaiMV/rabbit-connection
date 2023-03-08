@@ -1,0 +1,21 @@
+{
+  "bindings": [
+    {
+      "type": "httpTrigger",
+      "direction": "in",
+      "authLevel": "function",
+      "name": "input",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "type": "rabbitMQ",
+      "name": "outputMessage",
+      "queueName": "test_queue",
+      "connectionStringSetting": "amqp://ops:ops@200.52.64.101:5672/",
+      "direction": "out"
+    }
+  ]
+}
