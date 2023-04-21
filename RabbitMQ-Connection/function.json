@@ -1,10 +1,10 @@
 {
   "bindings": [
     {
-      "name": "myQueueItem",
+      "name": "message",
       "type": "rabbitMqTrigger",
       "direction": "in",
-      "queueName": "test_queue",
+      "queueName": "input_queue",
       "connectionStringSetting": "amqp://ops:ops@200.52.64.101:5672/"
     }
   ]

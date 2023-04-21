@@ -16,9 +16,9 @@
     "rabbitMQ": {
       "prefetchCount": 100,
       "queueName": "test_queue",
-      "connectionString": "amqp://ops:ops@localhost:5672",
-      "connectionStringSetting": "amqp://ops:ops@localhost:5672",
-      "hostName": "localhost",
+      "connectionString": "amqp://ops:ops@200.52.64.101:5672",
+      "connectionStringSetting": "amqp://ops:ops@200.52.64.101:5672",
+      "hostName": "200.52.64.101",
       "username": "ops",
       "password": "ops",
       "port": 5672

@@ -6,6 +6,10 @@
     "start": "func start",
     "test": "echo \"No tests yet...\""
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "@lib/amqp-ts": "^1.0.7",
+    "ajv": "^8.12.0",
+    "amqp-ts": "^1.8.0",
+    "amqplib": "^0.10.3"
+  }
 }
