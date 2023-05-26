@@ -15,12 +15,12 @@
   "extensions": {
     "rabbitMQ": {
       "prefetchCount": 100,
-      "queueName": "test_queue",
-      "connectionString": "amqp://ops:ops@200.52.64.101:5672",
-      "connectionStringSetting": "amqp://ops:ops@200.52.64.101:5672",
-      "hostName": "200.52.64.101",
-      "username": "ops",
-      "password": "ops",
+      "queueName": "input_queue",
+      "connectionString": "amqps://ajqhzdgj:yiI1jdL5aepHLbAnxKMU-1R9ApQrok91@dramatic-gold-ladybird.rmq5.cloudamqp.com/",
+      "connectionStringSetting": "amqps://ajqhzdgj:yiI1jdL5aepHLbAnxKMU-1R9ApQrok91@dramatic-gold-ladybird.rmq5.cloudamqp.com/",
+      "hostName": "dramatic-gold-ladybird.rmq5.cloudamqp.com",
+      "username": "ajqhzdgj",
+      "password": "yiI1jdL5aepHLbAnxKMU-1R9ApQrok91",
       "port": 5672
     }
   }
