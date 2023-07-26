@@ -1,0 +1,29 @@
+variables:
+  AZURE_CLIENT_ID: b87186ce-aa78-4fb5-9acd-ee1ca1882299
+  AZURE_CLIENT_SECRET: WXl8Q~M-vPIhnAuHFDRybDo9xY7L0A4acDXQPc_G
+  AZURE_TENANT_ID: e1e0451f-ce84-4784-b4d7-c810bc8f6668
+  AZURE_WEBAPP_NAME: armados-service
+
+build:
+  stage: build
+  image: node:latest
+  script:
+    - npm install -g azure-functions-core-tools
+    # Build the code for the Azure Function
+    - npm run start
+    # - node ./WailinHttpTrigger/index.js
+  artifacts:
+    paths:
+      - dist/myartifact.zip
+    name: wailin_node_artifact
+
+deploy:
+  stage: deploy
+  image: mcr.microsoft.com/azure-cli
+  script:
+    # Login to Azure
+    - az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+    # Deploy the code to Azure
+    - az functionapp deployment source config-zip --name $AZURE_WEBAPP_NAME  --resource-group Insights_Test --src dist/myartifact.zip
+  dependencies:
+    - build
