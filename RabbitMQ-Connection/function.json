@@ -5,7 +5,7 @@
       "type": "rabbitMqTrigger",
       "direction": "in",
       "queueName": "input_queue",
-      "connectionStringSetting": "amqps://ajqhzdgj:yiI1jdL5aepHLbAnxKMU-1R9ApQrok91@dramatic-gold-ladybird.rmq5.cloudamqp.com/"
+      "connectionStringSetting": "amqps://azure-engine:pyobrTW_PkrSHlkcikGdhZPNUzwyokr1@mini-green-skunk.rmq2.cloudamqp.com/tkdtqcou"
     }
   ]
 }

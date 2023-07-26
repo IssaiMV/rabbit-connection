@@ -66,7 +66,6 @@ const schema = {
                                 },
                                 "required": [
                                     "familyIdentifier",
-                                    "splitOrderDetails",
                                     "maxHeight",
                                     "maxLayers",
                                     "maxProof"
@@ -81,8 +80,7 @@ const schema = {
                         "maxHeight",
                         "maxLayers",
                         "createVirtualPositions",
-                        "familyConfigurations",
-                        "splitOrderDetails"
+                        "familyConfigurations"
                     ]
                 },
                 "orders": {

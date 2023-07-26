@@ -1,4 +1,3 @@
-
 module.exports = async function (context, req) {
 
     context.log('JavaScript HTTP trigger function processed a request.');
@@ -6,14 +5,14 @@ module.exports = async function (context, req) {
     const clientId = (req.query._clientId || (req.body && req.body._clientId));
 
     var amqp = require("amqp-ts");
-    var connection = new amqp.Connection("amqps://ajqhzdgj:yiI1jdL5aepHLbAnxKMU-1R9ApQrok91@dramatic-gold-ladybird.rmq5.cloudamqp.com/");
+    var connection = new amqp.Connection("amqps://azure-engine:pyobrTW_PkrSHlkcikGdhZPNUzwyokr1@mini-green-skunk.rmq2.cloudamqp.com/tkdtqcou");
     var exchange = connection.declareExchange("ops", 'topic', { durable: true });
     const options = {
         deliveryMode: 2,
         contentType: 'application/json',
         correlationId: clientId,
         replyTo: 'output_queue',
-        expiration: '10000', // 10 segundos
+        expiration: '10000',
         priority: 1,
         messageId: clientId,
         timestamp: new Date().getTime()
