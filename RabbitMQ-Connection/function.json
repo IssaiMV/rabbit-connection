@@ -4,7 +4,7 @@
       "name": "message",
       "type": "rabbitMqTrigger",
       "direction": "in",
-      "queueName": "input_queue",
+      "queueName": "input_queue_test",
       "connectionStringSetting": "amqps://azure-engine:pyobrTW_PkrSHlkcikGdhZPNUzwyokr1@mini-green-skunk.rmq2.cloudamqp.com/tkdtqcou"
     }
   ]
