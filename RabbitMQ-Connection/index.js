@@ -55,7 +55,7 @@ const schema = {
                                 "type": "object",
                                 "properties": {
                                     "familyIdentifier": {
-                                        "type": "number"
+                                        "type": ["number", "string"]
                                     },
                                     "splitOrderDetails": {
                                         "type": "boolean"
@@ -119,10 +119,10 @@ const schema = {
                                                 },
                                                 "sequence": {},
                                                 "subfamilyIdentifier": {
-                                                    "type": "number"
+                                                    "type": ["number", "string"]
                                                 },
                                                 "familyIdentifier": {
-                                                    "type": "number"
+                                                    "type": ["number", "string"]
                                                 }
                                             },
                                             "required": [
