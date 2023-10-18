@@ -4,6 +4,13 @@ module.exports = async function (context, req) {
     const message = (req.query.message || (req.body && req.body.message));
     const clientId = (req.query._clientId || (req.body && req.body._clientId));
 
+    if (clientId) {
+        context.log('Client Id: ' + clientId);
+    }
+    if (message.routeIdentifier) {
+        context.log('routeIdentifier: ' + message.routeIdentifier);
+    }
+
     var amqp = require("amqp-ts");
     var connection = new amqp.Connection("amqps://azure-engine:pyobrTW_PkrSHlkcikGdhZPNUzwyokr1@mini-green-skunk.rmq2.cloudamqp.com/tkdtqcou");
     var exchange = connection.declareExchange("ops", 'topic', { durable: true });

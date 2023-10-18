@@ -97,7 +97,7 @@ const schema = {
                                     "type": "object",
                                     "properties": {
                                         "orderDetailIdentifier": {
-                                            "type": "number"
+                                            "type": ["number", "string"]
                                         },
                                         "quantity": {
                                             "type": "number"
@@ -164,6 +164,7 @@ const schema = {
         "message"
     ]
 }
+
 function validateMessage(data) {
     const ajv = new Ajv()
     const validate = ajv.compile(schema)
@@ -203,7 +204,6 @@ async function sendHttpPostRequest(url, body) {
         throw new Error('Ocurrió un error al procesar la solicitud HTTP: ' + error.message);
     }
 }
-
 
 function sendMessageToValidatedUrl(message) {
     return sendHttpPostRequest(OPTIMAL_TRANSPORT_FUNCTION_URL, message);
