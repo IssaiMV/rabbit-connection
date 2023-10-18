@@ -1,7 +1,7 @@
 const Ajv = require("ajv")
 
-const URL_LOGIC_APP = 'https://prod-27.southcentralus.logic.azure.com:443/workflows/545104cac4bc40e88402762795b541db/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=RQHUm3A97_jNR4oHLbcsQ-2T1sWVNWcMoYPPkPWmyOU'
-const URL_AZURE_FUNCTION = 'https://dev-rabbitmq-engine.azurewebsites.net/api/RabbitMQ-SendMessage?code=LscMPOkfGyUcu5okzs0nTbyWZyEVBQuEEJgjUcl4fQkiAzFunVYJRg=='
+const SEND_MESSAGE_FUNCTION_URL = 'https://dev-rabbitmq-engine.azurewebsites.net/api/RabbitMQ-SendMessage?code=LscMPOkfGyUcu5okzs0nTbyWZyEVBQuEEJgjUcl4fQkiAzFunVYJRg=='
+const OPTIMAL_TRANSPORT_FUNCTION_URL = 'https://dev-armados-engine.azurewebsites.net/api/optimal-transport?code=kWbjnx84xI8Tf4KUvp1C51uUKkumZYAnf8qsQVnPbN7RAzFugUOY7g=='
 
 const schema = {
     "type": "object",
@@ -55,7 +55,7 @@ const schema = {
                                 "type": "object",
                                 "properties": {
                                     "familyIdentifier": {
-                                        "type": "number"
+                                        "type": ["number", "string"]
                                     },
                                     "splitOrderDetails": {
                                         "type": "boolean"
@@ -97,7 +97,7 @@ const schema = {
                                     "type": "object",
                                     "properties": {
                                         "orderDetailIdentifier": {
-                                            "type": "number"
+                                            "type": ["number", "string"]
                                         },
                                         "quantity": {
                                             "type": "number"
@@ -119,10 +119,10 @@ const schema = {
                                                 },
                                                 "sequence": {},
                                                 "subfamilyIdentifier": {
-                                                    "type": "number"
+                                                    "type": ["number", "string"]
                                                 },
                                                 "familyIdentifier": {
-                                                    "type": "number"
+                                                    "type": ["number", "string"]
                                                 }
                                             },
                                             "required": [
@@ -165,16 +165,6 @@ const schema = {
     ]
 }
 
-function buildUrl(body) {
-    const { valid, errorMessage } = validateMessage(body)
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json")
-    const url = valid ? URL_LOGIC_APP : URL_AZURE_FUNCTION
-    const bodyFetch = valid ? { ...body } : { "message": errorMessage, _clientId: body.clientId }
-    const requestOptions = { method: 'POST', headers: myHeaders, body: JSON.stringify(bodyFetch) }
-    return fetch(url, requestOptions)
-}
-
 function validateMessage(data) {
     const ajv = new Ajv()
     const validate = ajv.compile(schema)
@@ -191,18 +181,82 @@ function validateMessage(data) {
     return { valid }
 }
 
-module.exports = async function (context, message) {
-    context.log('JavaScript rabbitmq trigger function processed work item', message)
+async function sendHttpPostRequest(url, body) {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const requestOptions = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
+
     try {
-        if (typeof message.message === 'string') {
-            message = {
-                clientId: message.clientId,
-                message: JSON.parse(message.message)
-            }
+        const response = await fetch(url, requestOptions);
+
+        if (!response.ok) {
+            throw new Error('La respuesta de la red no es válida');
         }
-        const response = await buildUrl(message);
-        context.log('El mensaje se ha enviado correctamente. Status: ' + response.status);
+
+        try {
+            const responseText = await response.text();
+            const responseData = JSON.parse(responseText);
+            return responseData;
+        } catch (error) {
+            return { message: 'Mensaje enviado' };
+        }
     } catch (error) {
-        context.log('Ha ocurrido un error al intentar enviar el mensaje', error);
+        throw new Error('Ocurrió un error al procesar la solicitud HTTP: ' + error.message);
+    }
+}
+
+function sendMessageToValidatedUrl(message) {
+    return sendHttpPostRequest(OPTIMAL_TRANSPORT_FUNCTION_URL, message);
+}
+
+function sendMessageToNonValidatedUrl(errorMessage, clientId) {
+    const bodyFetch = { "message": errorMessage, _clientId: clientId };
+    return sendHttpPostRequest(SEND_MESSAGE_FUNCTION_URL, bodyFetch);
+}
+
+function sendResponseToRabbitMQ(message, clientId) {
+    const bodyFetch = { "message": message, _clientId: clientId };
+    return sendHttpPostRequest(SEND_MESSAGE_FUNCTION_URL, bodyFetch);
+}
+
+function parseMessageIfString(payload) {
+    if (typeof payload.message === 'string') {
+        return {
+            clientId: payload.clientId,
+            message: JSON.parse(payload.message)
+        };
+    }
+    return payload;
+}
+
+module.exports = async function (context, payload) {
+    context.log('JavaScript rabbitmq trigger function processed work item', payload)
+    try {
+        payload = parseMessageIfString(payload); // Parse the message if it is a string
+
+        context.log('Client id: ' + payload.clientId);
+        context.log('routeIdentifier: ' + payload.message.routeIdentifier);
+
+        // Validate the message
+        const validationResult = validateMessage(payload);
+
+        if (!validationResult.valid) {
+            context.log('The message did not pass validation:', validationResult.errorMessage);
+            // Send the message to another URL for non-validated messages
+            context.log('validating result: ', validationResult.errorMessage);
+            await sendMessageToNonValidatedUrl(validationResult.errorMessage, payload.clientId);
+            context.log('The message has been sent to the non-validated URL ');
+
+            // No response sent to RabbitMQ for non-validated messages
+        } else {
+            // Send the message to the validated URL
+            const response = await sendMessageToValidatedUrl(payload.message);
+            context.log('The message has been sent to Optimal Transport successfully.');
+
+
+            await sendResponseToRabbitMQ(response, payload.clientId);
+        }
+    } catch (error) {
+        context.log('An error occurred while trying to send the message', error);
     }
 }
